@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Eggs CAPTCHA Demo</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        #catch-eggs-canvas {
+            border: 2px solid #333;
+            border-radius: 8px;
+            background-color: #fff;
+            margin: 20px 0;
+        }
+
+        .instructions {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .controls {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            margin: 10px 0;
+        }
+
+        label {
+            display: inline-block;
+            width: 120px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+            vertical-align: middle;
+        }
+
+        .value-display {
+            display: inline-block;
+            width: 40px;
+            text-align: left;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Catch Eggs CAPTCHA</h1>
+        <div class="instructions">
+            <p>Catch 3 <span id="targetColorName">colored</span> eggs while avoiding other colors!</p>
+            <p>Move your mouse to catch the eggs. The chicken will move horizontally and drop eggs.</p>
+        </div>
+        <div class="controls">
+            <div class="control-group">
+                <label for="maxEggs">Max Eggs:</label>
+                <input type="range" id="maxEggs" min="5" max="30" value="15" step="1">
+                <span class="value-display" id="maxEggsValue">15</span>
+            </div>
+            <div class="control-group">
+                <label for="spawnRate">Spawn Rate:</label>
+                <input type="range" id="spawnRate" min="0.01" max="0.2" value="0.05" step="0.01">
+                <span class="value-display" id="spawnRateValue">0.05</span>
+            </div>
+            <div class="control-group">
+                <label for="minEggs">Min Eggs:</label>
+                <input type="range" id="minEggs" min="1" max="10" value="5" step="1">
+                <span class="value-display" id="minEggsValue">5</span>
+            </div>
+        </div>
+        <canvas id="catch-eggs-canvas"></canvas>
+        <div class="status" id="status">Click Start to begin</div>
+        <button id="startButton">Start CAPTCHA</button>
+    </div>
+
+    <script src="../src/catch-eggs-captcha.js"></script>
+    <script>
+        const colorNames = {
+            '#FF5733': 'orange',
+            '#33FF57': 'green',
+            '#3357FF': 'blue',
+            '#F3FF33': 'yellow',
+            '#FF33F3': 'pink',
+            '#33FFF3': 'cyan',
+            '#F333FF': 'purple',
+            '#FF3333': 'red'
+        };
+
+        // Get control elements
+        const maxEggsInput = document.getElementById('maxEggs');
+        const spawnRateInput = document.getElementById('spawnRate');
+        const minEggsInput = document.getElementById('minEggs');
+        const maxEggsValue = document.getElementById('maxEggsValue');
+        const spawnRateValue = document.getElementById('spawnRateValue');
+        const minEggsValue = document.getElementById('minEggsValue');
+
+        // Update value displays
+        maxEggsInput.addEventListener('input', () => {
+            maxEggsValue.textContent = maxEggsInput.value;
+        });
+
+        spawnRateInput.addEventListener('input', () => {
+            spawnRateValue.textContent = parseFloat(spawnRateInput.value).toFixed(2);
+        });
+
+        minEggsInput.addEventListener('input', () => {
+            minEggsValue.textContent = minEggsInput.value;
+        });
+
+        const captcha = new CatchEggsCaptcha({
+            canvasId: 'catch-eggs-canvas',
+            requiredCatches: 3,
+            duration: 30000,
+            width: 400,
+            height: 400,
+            chickenSpeed: 1,
+            eggSpeed: 0.7,
+            noiseLevel: 0.15,
+            targetEggChance: 0.4,
+            colorVariation: 0.2,
+            patternNoise: 0.1,
+            maxEggs: parseInt(maxEggsInput.value),
+            spawnRate: parseFloat(spawnRateInput.value),
+            minEggs: parseInt(minEggsInput.value)
+        });
+
+        const startButton = document.getElementById('startButton');
+        const statusElement = document.getElementById('status');
+        const targetColorName = document.getElementById('targetColorName');
+
+        function updateTargetColorDisplay(color) {
+            targetColorName.textContent = colorNames[color] || 'colored';
+        }
+
+        captcha.init();
+
+        startButton.addEventListener('click', () => {
+            startButton.disabled = true;
+            statusElement.textContent = 'Catch the target eggs!';
+            
+            // Update captcha options with current control values
+            captcha.options.maxEggs = parseInt(maxEggsInput.value);
+            captcha.options.spawnRate = parseFloat(spawnRateInput.value);
+            captcha.options.minEggs = parseInt(minEggsInput.value);
+            
+            captcha.start((success) => {
+                startButton.disabled = false;
+                if (success) {
+                    statusElement.textContent = 'Success! You caught the correct eggs!';
+                } else {
+                    statusElement.textContent = 'Failed! Try again.';
+                }
+            });
+
+            updateTargetColorDisplay(captcha.options.targetColor);
+        });
+    </script>
+</body>
+</html> 

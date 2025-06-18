@@ -1,0 +1,17 @@
+{
+  "name": "catch-eggs-captcha",
+  "version": "1.0.0",
+  "description": "A fun and secure CAPTCHA system where users catch colored eggs from a chicken",
+  "main": "dist/catch-eggs-captcha.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch"
+  },
+  "keywords": ["captcha", "security", "game", "verification"],
+  "author": "Mourad GHAFIRI",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+} 
