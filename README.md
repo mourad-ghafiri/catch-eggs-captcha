@@ -12,16 +12,9 @@ A fun and engaging CAPTCHA system where users need to catch eggs of a specific c
 - Responsive design that works on all screen sizes
 - No external dependencies
 
-## Installation
-
-```bash
-npm install catch-eggs-captcha
-```
-
 ## Usage
 
 ```javascript
-import CatchEggsCaptcha from 'catch-eggs-captcha';
 
 const captcha = new CatchEggsCaptcha({
     canvasId: 'catch-eggs-canvas',
