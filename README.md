@@ -2,6 +2,9 @@
 
 A fun and engaging CAPTCHA system where users need to catch eggs of a specific color while avoiding others. The game features a chicken that moves horizontally and drops eggs with random motion and colors, making it challenging for bots while remaining accessible to humans.
 
+## Demo
+https://mourad-ghafiri.github.io/catch-eggs-captcha/
+
 ## Features
 
 - Interactive gameplay with mouse control
